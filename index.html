@@ -68,8 +68,8 @@
         const taskInput = document.getElementById("taskInput").value;
         
 
-        database.ref('users/' + local_username + '/tasks/').push({
-          taskName: taskInput,
+        database.ref('users/' + local_username + '/tasks/' + taskInput).push({
+          full_task: taskInput,
         });
       }
 
