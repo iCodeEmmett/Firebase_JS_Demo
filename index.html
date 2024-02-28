@@ -83,7 +83,7 @@
       }
 
       // Retrieve Data
-      const dbRef = database.ref("users");
+      const dbRef = database.ref("users/");
       dbRef.on("value", (snapshot) => {
         const data = snapshot.val();
         // Do something with data, e.g., update the 'output' paragraph
@@ -93,7 +93,7 @@
           if (data[local_username].tasks !== null) {
               let tasksList = "";
               for (const task in data[local_username].tasks) {
-                tasksList += `<p>- ${data[local_username].tasks[task].taskName}</p></br>`;
+                tasksList += `<p>- ${data[local_username].tasks[task].full_task}</p></br>`;
               }
               document.getElementById("task-output").textContent = tasksList;
             }
