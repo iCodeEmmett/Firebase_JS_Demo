@@ -1,56 +1,104 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>replit</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Task Manager</title>
 
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-</head>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  </head>
 
-<body>
-  <input type="text" id="nameInput" placeholder="Name" />
-  <input type="email" id="emailInput" placeholder="Email" />
-  <button id="submitButton">Send User Data</button>
-  <p id="output"></p>
+  <body>
+    <input type="text" id="nameInput" placeholder="Name" /> </br>
+    <input type="email" id="emailInput" placeholder="Email" /> </br>
+    <input type="text" id="lastnameInput" placeholder="Last Name" /> </br>
+    <button id="submitButton">Send User Data</button></br>
+    <p id="output"></p>
 
-  
-  <script>
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAM8bgSWmUNS8jcOnbBe10SmHRiqyo4EZY",
-      authDomain: "fir-js-project-bf902.firebaseapp.com",
-      projectId: "fir-js-project-bf902",
-      storageBucket: "fir-js-project-bf902.appspot.com",
-      messagingSenderId: "1027239350805",
-      appId: "1:1027239350805:web:234218302fcf0afede741c"
-    };
+    <br><br>
 
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app); // Note: No .app here 
+    <input type="text" id="taskInput" placeholder="Task Name" />  
+    <button id="taskButton">Send Task Data</button>
+    <p id="task-output"></p>
+   
+    
 
-    // Write user data
-    function writeUserData() {
-      const name = document.getElementById("nameInput").value;
-      const email = document.getElementById("emailInput").value;
-      firebase.database().ref('users/').push({ // Use '.push()' to add new entries
-        username: name,
-        email: email
+
+    
+    <script>
+      var local_username;
+
+      window.onload = function(){
+        local_username = "";
+      }
+
+      // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAM8bgSWmUNS8jcOnbBe10SmHRiqyo4EZY",
+          authDomain: "fir-js-project-bf902.firebaseapp.com",
+          projectId: "fir-js-project-bf902",
+          storageBucket: "fir-js-project-bf902.appspot.com",
+          messagingSenderId: "1027239350805",
+          appId: "1:1027239350805:web:234218302fcf0afede741c",
+        };
+
+      // Initialize Firebase
+      const app = firebase.initializeApp(firebaseConfig);
+      const database = firebase.database(app); // Note: No .app here
+
+      
+
+      // Write user data
+      function writeUserData() {
+        const username = document.getElementById("nameInput").value;
+        const email = document.getElementById("emailInput").value;
+        const lastname = document.getElementById("lastnameInput").value;
+   
+        
+        database.ref('users/' + username).set({
+          username: username,
+          email: email,
+          lastName: lastname,
+        });
+      }
+
+      // Write task data
+      function writeTaskData() {
+        const taskInput = document.getElementById("taskInput").value;
+        
+
+        database.ref('users/' + local_username + '/tasks/').push({
+          taskName: taskInput,
+        });
+      }
+
+      // Retrieve Data
+      const dbRef = database.ref("users");
+      dbRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        // Do something with data, e.g., update the 'output' paragraph
+        if (local_username !== ""){
+          document.getElementById("output").textContent = `Welcome, ${data[local_username].username}!}.`;
+
+          if (data[local_username].tasks !== null) {
+              let tasksList = "";
+              for (const task in data[local_username].tasks) {
+                tasksList += `<p>- ${data[local_username].tasks[task].taskName}</p></br>`;
+              }
+              document.getElementById("task-output").textContent = tasksList;
+            }
+          }
       });
-    }
 
-    // Retrieve Data
-    const dbRef = database.ref('users/');
-    dbRef.on('value', (snapshot) => {
-      const data = snapshot.val();
-      // Do something with data, e.g., update the 'output' paragraph
-      document.getElementById('output').textContent = JSON.stringify(data); 
-    });
-
-    // Add button click event
-    document.getElementById('submitButton').addEventListener('click', writeUserData); 
-  </script>
-</body>
+      // Add button click event
+      document
+        .getElementById("submitButton")
+        .addEventListener("click", writeUserData);
+      // Add button click event
+      document
+        .getElementById("taskButton")
+        .addEventListener("click", writeTaskData);
+    </script>
+  </body>
 </html>
